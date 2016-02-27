@@ -65,7 +65,7 @@
       function toVevent(obj) {
         var summary = `${obj.subject_code.substr(0, 7)} ${obj.activityType}`;
         var location = obj.location;
-        var description = obj.description;
+        var description = obj.description !== "-" ? obj.description : obj.subject_description;
 
         var eventStartNoWeek = moment(obj.start_time, "HH:mm").day(obj.day_of_week);
         var eventEndNoWeek = moment(eventStartNoWeek).add(obj.duration, "minutes");

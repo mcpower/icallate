@@ -37,6 +37,16 @@ $("#outer-container").hide();</pre>
         </p>
         <h2>Step 5</h2>
         <p>
+          Choose your options:
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" value="" id="clayton-addresses" checked>
+              (Clayton events) Use addresses (like Room G15, 9 Rainforest Walk) instead of <a href="http://www.monash.edu/timetables/about/codes-abbreviations">location codes</a> (like CL_9Rnf/G15)
+            </label>
+          </div>
+        </p>
+        <h2>Step 6</h2>
+        <p>
           Click this button: <button class="btn btn-default" id="generate-button">Generate <code>.ics</code></button>
         </p>
         <p>
@@ -45,6 +55,18 @@ $("#outer-container").hide();</pre>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
     <script>
+      var claytonStreetNames = {
+        All: "Alliance Lane",
+        Anc: "Ancora Imparo Way",
+        Chn: "Chancellors Walk",
+        Col: "College Walk",
+        Exh: "Exhibition Walk",
+        FGR: "Ferntree Gully Road",
+        Inn: "Innovation Walk",
+        Rnf: "Rainforest Walk",
+        Res: "Research Way",
+        Sce: "Scenic Boulevard"
+      };
       // http://stackoverflow.com/a/30832210
       function download(text, name, type) {
         var a = document.getElementById("download-button");
@@ -68,8 +90,14 @@ $("#outer-container").hide();</pre>
 
       function toVevent(obj) {
         var summary = `${obj.subject_code.substr(0, 7)} ${obj.activityType}`;
-        var location = obj.location;
         var description = obj.description !== "-" ? obj.description : obj.subject_description;
+        var location;
+        var splitLocation = obj.location.split("/")
+        if (document.getElementById("clayton-addresses").checked && splitLocation[0].startsWith("CL_") && claytonStreetNames.hasOwnProperty(splitLocation[0].substr(-3, 3))) {
+          location = `Room ${splitLocation[1]}, ${splitLocation[0].slice(3, -3)} ${claytonStreetNames[splitLocation[0].substr(-3, 3)]}`;
+        } else {
+          location = obj.location;
+        }
 
         var eventStartNoWeek = moment(obj.start_time, "HH:mm").day(obj.day_of_week);
         var eventEndNoWeek = moment(eventStartNoWeek).add(obj.duration, "minutes");

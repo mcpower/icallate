@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>iCallate</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  </head>
+
+  <body>
+    <div class="container">
+        <h1>iCallate</h1>
+        <p class="lead">Allocate+ to iCalendar tool</p>
+        <h2>Step 1</h2>
+        <p>Log into <a href="https://allocate.timetable.monash.edu/aplus-2016/student">Allocate+</a>.</p>
+        <h2>Step 2</h2>
+        <p>
+          Open up the JavaScript console.
+          <ul>
+            <li>On Firefox and Chrome, press <kbd>Ctrl-Shift-J</kbd>.</li>
+            <li>If you're stuck or you're on another browser, press <kbd>F12</kbd> and click on something which says "Console".</li>
+          </ul>
+        </p>
+        <h2>Step 3</h2>
+        <p>
+          Copy the code below, and paste it in the console. <strong>DO NOT PRESS ENTER</strong>
+          <pre>$(document.body).prepend('&lt;textarea style="width:100%;height:100px"&gt;'+JSON.stringify(data.student.allocated)+'&lt;/textarea&gt;')</pre>
+          Stare at the code that you just pasted in. If you think it does something shifty, you should probably get away ASAP because it could do some pretty serious damage. If not, press <kbd>Enter</kbd>.
+        </p>
+        <h2>Step 4</h2>
+        <p>
+          A big bunch of text should appear at the top of your screen. Copy that and paste it in below:
+          <div>
+            <input type="text" placeholder="data.student.allocated" class="form-control" id="user-input">
+          </div>
+        </p>
+        <h2>
+        <p>
+          Click this button: <button class="btn btn-default" id="generate-button">Generate <code>.ics</code></button>
+        </p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script>
+      // http://stackoverflow.com/a/30832210
+      function download(text, name, type) {
+        var a = document.createElement("a");
+        var file = new Blob([text], {type: type});
+        a.href = URL.createObjectURL(file);
+        a.download = name;
+        a.click();
+      }
+
+      function dayOfWeektoiCal(dayOfWeek) {
+        return dayOfWeek.substr(0, 2).toUpperCase();
+      }
+
+      function momentToiCal(m) {
+        return "TZID=Australia/Hobart:" + m.format("YYYYMMDDTHHmmss");
+      }
+
+      function momentWeekIndexToIcal(m, index) {
+        return momentToiCal(moment(m).week(index + 1));
+      }
+
+      function toVevent(obj) {
+        var summary = `${obj.subject_code.substr(0, 7)} ${obj.activityType}`;
+        var location = obj.location;
+        var description = obj.description;
+
+        var eventStartNoWeek = moment(obj.start_time, "HH:mm").day(obj.day_of_week);
+        var eventEndNoWeek = moment(eventStartNoWeek).add(obj.duration, "minutes");
+
+        var firstWeekIndex = obj.week_pattern.indexOf("1");
+        var count = obj.week_pattern.lastIndexOf("1") - firstWeekIndex + 1;
+        var excludeWeekIndices = [];
+        // need to search from obj.week_pattern[firstWeekIndex + 1] to obj.week_pattern[firstWeekIndex + count - 2] inclusive for 0s
+        for (var i = firstWeekIndex + 1; i < firstWeekIndex + count - 1; i++) {
+          if (obj.week_pattern[i] === "0") {
+            excludeWeekIndices.push(i);
+          }
+        }
+
+        var dtStart = momentWeekIndexToIcal(eventStartNoWeek, firstWeekIndex);
+        var dtEnd = momentWeekIndexToIcal(eventEndNoWeek, firstWeekIndex);
+
+        var rRule = "FREQ=WEEKLY;COUNT=" + count + ";BYDAY=" + obj.day_of_week.substr(0, 2).toUpperCase();
+
+        var exDateString = excludeWeekIndices.map(function (index) {
+          return "EXDATE;" + momentWeekIndexToIcal(eventStartNoWeek, index);
+        }).join("\n");
+
+        return `BEGIN:VEVENT
+DTSTART;${dtStart}
+DTEND;${dtEnd}
+RRULE:${rRule}
+${exDateString}
+DESCRIPTION:${description}
+LOCATION:${location}
+SUMMARY:${summary}
+END:VEVENT`;
+      }
+
+      function generate() {
+        var allocated;
+        try {
+          allocated = JSON.parse(document.getElementById("user-input").value);
+        } catch (e) {
+          alert("We got an error when parsing the input: " + e.toString());
+        }
+        var vEventString = Object.keys(allocated).map(function (key) {
+          return toVevent(allocated[key]);
+        }).join("\n");
+        var icalendar = `BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+${vEventString}
+END:VCALENDAR`
+        download(icalendar, "allocateplus.ics", "text/calendar");
+      }
+      document.getElementById("generate-button").addEventListener("click", generate);
+    </script>
+  </body>
+</html>

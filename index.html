@@ -35,16 +35,19 @@
         <p>
           Click this button: <button class="btn btn-default" id="generate-button">Generate <code>.ics</code></button>
         </p>
+        <p>
+          <a class="btn btn-default" id="download-button" style="visibility:hidden"><span class="glyphicon glyphicon-download"></span> Download <code>.ics</code></a>
+        </p>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
     <script>
       // http://stackoverflow.com/a/30832210
       function download(text, name, type) {
-        var a = document.createElement("a");
+        var a = document.getElementById("download-button");
         var file = new Blob([text], {type: type});
         a.href = URL.createObjectURL(file);
         a.download = name;
-        a.click();
+        a.style.visibility = "visible";
       }
 
       function dayOfWeektoiCal(dayOfWeek) {

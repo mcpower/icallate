@@ -97,7 +97,7 @@ $("#outer-container").hide();</pre>
       function toVevent(obj) {
         var summary = `${obj.subject_code.substr(0, 7)} ${obj.activityType}`;
         if (document.getElementById("campus-display").checked) {
-          summary += ` (${obj.zone})`;
+          summary += ` (${obj.campus})`;
         }
         var description = obj.description !== "-" ? obj.description : obj.subject_description;
         var location;

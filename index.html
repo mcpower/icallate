@@ -76,7 +76,7 @@ $("#outer-container").hide();</pre>
       // http://stackoverflow.com/a/30832210
       function download(text, name, type) {
         var a = document.getElementById("download-button");
-        var file = new Blob([text], {type: type});
+        var file = new Blob([text], { type: type });
         a.href = URL.createObjectURL(file);
         a.download = name;
         a.style.visibility = "visible";
@@ -95,15 +95,15 @@ $("#outer-container").hide();</pre>
       }
 
       function toVevent(obj) {
-        var summary = `${obj.subject_code.substr(0, 7)} ${obj.activityType}`;
+        var summary = obj.subject_code.substr(0, 7) + " " + obj.activityType;
         if (document.getElementById("campus-display").checked) {
-          summary += ` (${obj.campus})`;
+          summary += " (" + obj.campus + ")";
         }
         var description = obj.description !== "-" ? obj.description : obj.subject_description;
         var location;
-        var splitLocation = obj.location.split("/")
+        var splitLocation = obj.location.split("/");
         if (document.getElementById("clayton-addresses").checked && splitLocation[0].startsWith("CL_") && claytonStreetNames.hasOwnProperty(splitLocation[0].substr(-3, 3))) {
-          location = `Room ${splitLocation[1]}, ${splitLocation[0].slice(3, -3)} ${claytonStreetNames[splitLocation[0].substr(-3, 3)]}`;
+          location = "Room " + splitLocation[1] + ", " + splitLocation[0].slice(3, -3) + " " + claytonStreetNames[splitLocation[0].substr(-3, 3)];
         } else {
           location = obj.location;
         }
@@ -130,15 +130,7 @@ $("#outer-container").hide();</pre>
           return "EXDATE;" + momentWeekIndexToIcal(eventStartNoWeek, index);
         }).join("\n");
 
-        return `BEGIN:VEVENT
-DTSTART;${dtStart}
-DTEND;${dtEnd}
-RRULE:${rRule}
-${exDateString}
-DESCRIPTION:${description}
-LOCATION:${location}
-SUMMARY:${summary}
-END:VEVENT`;
+        return "BEGIN:VEVENT\nDTSTART;" + dtStart + "\nDTEND;" + dtEnd + "\nRRULE:" + rRule + "\n" + exDateString + "\nDESCRIPTION:" + description + "\nLOCATION:" + location + "\nSUMMARY:" + summary + "\nEND:VEVENT";
       }
 
       function generate() {
@@ -151,11 +143,7 @@ END:VEVENT`;
         var vEventString = Object.keys(allocated).map(function (key) {
           return toVevent(allocated[key]);
         }).join("\n");
-        var icalendar = `BEGIN:VCALENDAR
-VERSION:2.0
-CALSCALE:GREGORIAN
-${vEventString}
-END:VCALENDAR`
+        var icalendar = "BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\n" + vEventString + "\nEND:VCALENDAR";
         download(icalendar, "allocateplus.ics", "text/calendar");
       }
       document.getElementById("generate-button").addEventListener("click", generate);

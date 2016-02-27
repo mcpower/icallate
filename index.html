@@ -44,6 +44,12 @@ $("#outer-container").hide();</pre>
               Monash Clayton: Use addresses (Room G15, 9 Rainforest Walk) instead of <a href="http://www.monash.edu/timetables/about/codes-abbreviations">location codes</a> (CL_9Rnf/G15)
             </label>
           </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" value="" id="campus-display">
+              Display campus in event titles
+            </label>
+          </div>
         </p>
         <h2>Step 6</h2>
         <p>
@@ -90,6 +96,9 @@ $("#outer-container").hide();</pre>
 
       function toVevent(obj) {
         var summary = `${obj.subject_code.substr(0, 7)} ${obj.activityType}`;
+        if (document.getElementById("campus-display").checked) {
+          summary += ` (${obj.zone})`;
+        }
         var description = obj.description !== "-" ? obj.description : obj.subject_description;
         var location;
         var splitLocation = obj.location.split("/")

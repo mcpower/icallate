@@ -99,6 +99,10 @@ var claytonStreetNames = {
   Res: "Research Way",
   Sce: "Scenic Boulevard"
 };
+
+var locationReplacements = [
+    [/Exh\w\//, "Exh/"]
+]
 // http://stackoverflow.com/a/30832210
 function download(text, name, type) {
   var a = document.getElementById("download-button");
@@ -126,14 +130,14 @@ function toVevent(obj) {
     summary += " (" + obj.campus + ")";
   }
   var description = obj.description !== "-" ? obj.description : obj.subject_description;
-  var location;
-  var splitLocation = obj.location.split("/");
+  var location = obj.location;
+  var i = locationReplacements.length; while (i--) {
+      location = location.replace(locationReplacements[i][0], locationReplacements[i][1]);
+  }
+  var splitLocation = location.split("/");
   if (document.getElementById("clayton-addresses").checked && splitLocation[0].startsWith("CL_") && claytonStreetNames.hasOwnProperty(splitLocation[0].substr(-3, 3))) {
     location = "Room " + splitLocation[1] + ", " + splitLocation[0].slice(3, -3) + " " + claytonStreetNames[splitLocation[0].substr(-3, 3)];
-  } else {
-    location = obj.location;
   }
-
   var eventStartNoWeek = moment(obj.start_time, "HH:mm").day(obj.day_of_week);
   var eventEndNoWeek = moment(eventStartNoWeek).add(obj.duration, "minutes");
 

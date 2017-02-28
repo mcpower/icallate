@@ -72,6 +72,18 @@
       </div>
       <div class="checkbox">
         <label>
+          <input type="checkbox" value="" id="description-staff" checked>
+          Show staff in event descriptions
+        </label>
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" value="" id="description-maplink" checked>
+          Add link to the official Monash map showing location of event (example: <a href="http://www.monash.edu/people/maps?Location=CL_9Rnf%2FG15">Room G15, 9 Rainforest Walk</a>)
+        </label>
+      </div>
+            <div class="checkbox">
+        <label>
           <input type="checkbox" value="" id="campus-display">
           Display campus in event titles
         </label>
@@ -132,7 +144,16 @@ function toVevent(obj) {
   if (document.getElementById("campus-display").checked) {
     summary += " (" + obj.campus + ")";
   }
-  var description = obj.description !== "-" ? obj.description : obj.subject_description;
+  var description = obj.subject_description;
+  if (obj.description !== "-") {
+    description += "\\n" + obj.description;
+  }
+  if (document.getElementById("description-staff").checked && obj.staff !== "-") {
+    description += "\\n" + "Staff: " + obj.staff;
+  }
+  if (document.getElementById("description-maplink").checked && obj.location !== "-") {
+    description += "\\n" + "Map link: http://www.monash.edu/people/maps?Location=" + encodeURIComponent(obj.location);
+  }
   var location = obj.location;
   var i = locationReplacements.length; while (i--) {
       location = location.replace(locationReplacements[i][0], locationReplacements[i][1]);

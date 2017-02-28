@@ -88,6 +88,26 @@
           Display campus in event titles
         </label>
       </div>
+      <br>
+      Where should the unit name from Allocate+ (example: INTRO TO COMPL MATHS) go?
+      <div class="radio">
+        <label>
+          <input type="radio" name="unit-name-pos" id="unit-name-pos-title" value="title">
+          In the event title (replaces the unit code)
+        </label>
+      </div>
+      <div class="radio">
+        <label>
+          <input type="radio" name="unit-name-pos" id="unit-name-pos-desc" value="desc">
+          In the event description
+        </label>
+      </div>
+      <div class="radio">
+        <label>
+          <input type="radio" name="unit-name-pos" id="unit-name-pos-none" value="none" checked>
+          Neither
+        </label>
+      </div>
       </p>
       <h2>Step 5</h2>
       <p>
@@ -140,20 +160,34 @@ function momentWeekIndexToIcal(m, index) {
 }
 
 function toVevent(obj) {
-  var summary = obj.subject_code.substr(0, 7) + " " + obj.activityType;
+  var summary = "";
+  switch (document.querySelector("input[name='unit-name-pos']:checked").value) {
+    case "title":
+      summary = obj.subject_description;
+      break;
+    case "desc":
+    case "none":
+      summary = obj.subject_code.substr(0, 7);
+      break;
+  }
+  summary += " " + obj.activityType;
   if (document.getElementById("campus-display").checked) {
     summary += " (" + obj.campus + ")";
   }
-  var description = obj.subject_description;
+  var descriptionLines = [];
+  if (document.getElementById("unit-name-pos-desc").checked) {
+    descriptionLines.push(obj.subject_description)
+  }
   if (obj.description !== "-") {
-    description += "\\n" + obj.description;
+    descriptionLines.push(obj.description);
   }
   if (document.getElementById("description-staff").checked && obj.staff !== "-") {
-    description += "\\n" + "Staff: " + obj.staff;
+    descriptionLines.push("Staff: " + obj.staff);
   }
   if (document.getElementById("description-maplink").checked && obj.location !== "-") {
-    description += "\\n" + "Map link: http://www.monash.edu/people/maps?Location=" + encodeURIComponent(obj.location);
+    descriptionLines.push("Map link: http://www.monash.edu/people/maps?Location=" + encodeURIComponent(obj.location));
   }
+  var description = descriptionLines.join("\\n")
   var location = obj.location;
   var i = locationReplacements.length; while (i--) {
       location = location.replace(locationReplacements[i][0], locationReplacements[i][1]);

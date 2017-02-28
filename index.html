@@ -162,6 +162,9 @@ function toVevent(obj) {
   if (document.getElementById("clayton-addresses").checked && splitLocation[0].startsWith("CL_") && claytonStreetNames.hasOwnProperty(splitLocation[0].substr(-3, 3))) {
     location = "Room " + splitLocation[1] + ", " + splitLocation[0].slice(3, -3) + " " + claytonStreetNames[splitLocation[0].substr(-3, 3)];
   }
+  if (obj.location === "-") {
+    location = "";
+  }
   var eventStartNoWeek = moment(obj.start_time, "HH:mm").day(obj.day_of_week);
   var eventEndNoWeek = moment(eventStartNoWeek).add(obj.duration, "minutes");
 

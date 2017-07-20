@@ -187,7 +187,7 @@ function toVevent(obj) {
     descriptionLines.push("Staff: " + obj.staff);
   }
   if (document.getElementById("description-maplink").checked && obj.location !== "-") {
-    descriptionLines.push("Map link: http://www.monash.edu/people/maps?Location=" + encodeURIComponent(obj.location));
+    descriptionLines.push("Map link: https://www.monash.edu/people/maps?Location=" + encodeURIComponent(obj.location));
   }
   var description = descriptionLines.join("\\n")
   var location = obj.location;

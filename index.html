@@ -36,7 +36,16 @@
       <p>Log into <a href="https://my-timetable.monash.edu/odd/student">Allocate+</a>.</p>
       <h2>Step 2</h2>
       <p>
-      If you know what you're doing, grab <code>window.data.student.allocated</code> as JSON and skip to Step 3.
+      Open up the JavaScript console <em>on the Allocate+ page</em>. On most browsers, press <kbd>F12</kbd> and click on something which says "Console".
+      </p>
+      <p>
+      If you are using Chrome or Firefox, type in <code>copy(window.data.student.allocated)</code> and press <kbd>Enter</kbd>. This will copy your Allocate+ allocations to the clipboard. Skip to Step 3.
+      </p>
+      <br />
+      <p>
+      If you are not using those browsers, copy the block of code below and paste it in. <strong>DO NOT PRESS ENTER</strong>.
+      <br />
+      Alternatively, go into the address bar, type in <code>javascript:</code>, and then paste in the code. <strong>DO NOT PRESS ENTER</strong>.
       </p>
       <pre>$(document.body).append(
   '&lt;textarea style="width: 100%; height: 300px; z-index: 9999999999; position: fixed;"&gt;' +
@@ -44,19 +53,14 @@
   '&lt;/textarea&gt;'
 )</pre>
       <p>
-      Open up the JavaScript console <em>on the Allocate+ page</em>. On most browsers, press <kbd>F12</kbd> and click on something which says "Console".
-      Paste in the code above and <strong>DO NOT PRESS ENTER</strong>.
-      </p>
-      <p>
-      Alternatively, go into the address bar, type in <code>javascript:</code>, and then paste in the code. <strong>DO NOT PRESS ENTER</strong>.
-      </p>
-      <br>
-      <p>
       Stare at the code that you just pasted in. <strong>Make sure it's the same code you copied.</strong> If you believe the code is not malicious, press <kbd>Enter</kbd>.
+      </p>
+      <p>
+      A big bunch of text (representing your Allocate+ allocations) should appear at the top of your screen. Copy it for Step 3.
       </p>
       <h2>Step 3</h2>
       <p>
-      A big bunch of text should appear at the top of your screen. Copy that and paste it in below:
+      Paste your Allocate+ allocations into the box below:
       <div>
         <input type="text" placeholder="data.student.allocated" class="form-control" id="user-input">
       </div>

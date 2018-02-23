@@ -13,9 +13,6 @@
       <div class="alert alert-info visible-xs-block" role="alert">
         <strong>Warning!</strong> This tool doesn't work well on mobile devices. Try it on a computer!
       </div>
-      <div class="alert alert-warning" role="alert">
-        Be sure to double check your times are correct in your calendar! Some calendar apps, like the one that comes with Windows 10, don't handle the timezone correctly. Google Calendar should always work!
-      </div>
       <h1>iCallate</h1>
       <p class="lead">Allocate+ to iCalendar tool</p>
       <p>
@@ -130,6 +127,8 @@ if (!String.prototype.startsWith) {
   };
 }
 
+var timezoneInfo = "BEGIN:VTIMEZONE\nTZID:Australia/Melbourne\nX-LIC:Australia/Melbourne\nBEGIN:DAYLIGHT\nTZOFFSETFROM:+1000\nTZOFFSETTO:+1100\nTZNAME:AEDT\nDTSTART:19700308T020000\nRRULE:FREQ=YEARLY;BYMONTH=8;BYDAY=1SU\nEND:DAYLIGHT\nBEGIN:STANDARD\nTZOFFSETFROM:+1100\nTZOFFSETTO:+1000\nTZNAME:AEST\nDTSTART:19701101T020000\nRRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU\nEND:STANDARD\nEND:VTIMEZONE\n";
+
 var claytonStreetNames = {
   All: "Alliance Lane",
   Anc: "Ancora Imparo Way",
@@ -239,7 +238,7 @@ function generate() {
   var vEventString = Object.keys(allocated).map(function (key) {
     return toVevent(allocated[key]);
   }).join("\n");
-  var icalendar = "BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\n" + vEventString + "\nEND:VCALENDAR";
+  var icalendar = "BEGIN:VCALENDAR\nVERSION:2.0\nCALSCALE:GREGORIAN\n" + timezoneInfo + vEventString + "\nEND:VCALENDAR";
   download(icalendar, "allocateplus.ics", "text/calendar");
 }
 document.getElementById("generate-button").addEventListener("click", generate);

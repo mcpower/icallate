@@ -159,8 +159,10 @@ function momentToiCal(m) {
   return "TZID=Australia/Melbourne:" + m.format("YYYYMMDDTHHmmss");
 }
 
+// Because m is now a date in the "first week of the year", we can just add
+// "index" weeks to it.
 function momentWeekIndexToIcal(m, index) {
-  return momentToiCal(moment(m).week(index + 1));
+  return momentToiCal(moment(m).add(index, "weeks"));
 }
 
 function toVevent(obj) {
@@ -203,7 +205,11 @@ function toVevent(obj) {
   if (obj.location === "-") {
     location = "";
   }
-  var eventStartNoWeek = moment(obj.start_time, "HH:mm").day(obj.day_of_week);
+  // Need to get year from event!
+  // Turns out that obj.start_date is "the first Monday of the first week"...
+  // ...which may be in the year before.
+  // However, it's consistent with what Allocate does - so let's use that instead.
+  var eventStartNoWeek = moment(obj.start_date + " " + obj.start_time, "DD/MM/YYYY HH:mm").day(obj.day_of_week);
   var eventEndNoWeek = moment(eventStartNoWeek).add(obj.duration, "minutes");
 
   var firstWeekIndex = obj.week_pattern.indexOf("1");

@@ -202,7 +202,8 @@ function toVevent(obj) {
   if (location.startsWith("CL_")) {
     const [_, streetCode, streetNumber, buildingName, roomCode] = location.match(/CL_(\w{3})-(\d{1,2})\.(.+)_(.+)/);
     if (document.getElementById("clayton-addresses").checked && location.startsWith("CL_") && claytonStreetNames.hasOwnProperty(streetCode)) {
-      location = `Room ${roomCode}, ${buildingName}, ${streetNumber} ${claytonStreetNames[streetCode]}`;
+      // Escape commas to ensure compatibility with macOS Calendar
+      location = `Room ${roomCode}\\, ${buildingName}\\, ${streetNumber} ${claytonStreetNames[streetCode]}`;
     }
     if (obj.location === "-") {
       location = "";

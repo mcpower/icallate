@@ -198,12 +198,15 @@ function toVevent(obj) {
   var i = locationReplacements.length; while (i--) {
       location = location.replace(locationReplacements[i][0], locationReplacements[i][1]);
   }
-  var splitLocation = location.split("/");
-  if (document.getElementById("clayton-addresses").checked && splitLocation[0].startsWith("CL_") && claytonStreetNames.hasOwnProperty(splitLocation[0].substr(-3, 3))) {
-    location = "Room " + splitLocation[1] + ", " + splitLocation[0].slice(3, -3) + " " + claytonStreetNames[splitLocation[0].substr(-3, 3)];
-  }
-  if (obj.location === "-") {
-    location = "";
+
+  if (location.startsWith("CL_")) {
+    const [_, streetCode, streetNumber, buildingName, roomCode] = location.match(/CL_(\w{3})-(\d{1,2})\.(.+)_(.+)/);
+    if (document.getElementById("clayton-addresses").checked && location.startsWith("CL_") && claytonStreetNames.hasOwnProperty(streetCode)) {
+      location = `Room ${roomCode}, ${buildingName}, ${streetNumber} ${claytonStreetNames[streetCode]}`;
+    }
+    if (obj.location === "-") {
+      location = "";
+    }
   }
   // Need to get year from event!
   // Turns out that obj.start_date is "the first Monday of the first week"...
